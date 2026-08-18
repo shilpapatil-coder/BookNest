@@ -38,6 +38,7 @@ function App() {
             <use href="/icons.svg#documentation-icon"></use>
           </svg>
           <h2>Documentation</h2>
+		  <h1 className="text-3xl text-blue-500 font-bold">Hello Tailwind!</h1>
           <p>Your questions, answered</p>
           <ul>
             <li>
