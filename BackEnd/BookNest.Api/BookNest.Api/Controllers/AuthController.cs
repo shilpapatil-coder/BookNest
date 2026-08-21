@@ -60,8 +60,21 @@ public class AuthController : ControllerBase
         {
             return Unauthorized(new { message = "Invalid email or password." });
         }
+        // 1. Check if the email is our special admin email
+        var role = user.Email.ToLower() == "admin@booknest.com" ? "Admin" : "User";
 
-        var token = _tokenService.CreateToken(user, "User");
+        // 2. Create the token with that specific role
+        var token = _tokenService.CreateToken(user, role);
+
+        // 3. Send the role back to React!
+        return Ok(new AuthResponseDto
+        {
+            Token = token,
+            Email = user.Email,
+            FullName = user.FullName,
+            Role = role // <-- Add this!
+        });
+
 
         return Ok(new AuthResponseDto
         {

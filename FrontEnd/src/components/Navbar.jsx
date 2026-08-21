@@ -1,15 +1,18 @@
 
 // src/components/Navbar.jsx
 import { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { CartContext } from '../context/CartContext';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
+    const { getCartCount, clearCart } = useContext(CartContext);
     const navigate = useNavigate();
 
     const handleLogout = () => {
         logout();
+        clearCart();
         navigate('/login');
     };
 
@@ -24,12 +27,24 @@ const Navbar = () => {
                             BookNest
                         </Link>
 
-                        <div className="hidden md:flex space-x-2">
-                            <Link to="/" className="text-gray-300 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg text-sm font-medium transition-all">Catalog</Link>
-
-                            {/* Only show Admin Dashboard if the user is logged in */}
+                        <div className="hidden md:flex space-x-2 flex-wrap items-center">
+                            <NavLink to="/" end className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive ? 'text-white bg-white/10 shadow-inner' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>Catalog</NavLink>
                             {user && (
-                                <Link to="/admin" className="text-gray-300 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg text-sm font-medium transition-all">Admin Dashboard</Link>
+                                <NavLink to="/orders" className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive ? 'text-white bg-white/10 shadow-inner' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>My Orders</NavLink>
+                            )}
+
+                            {user && (
+                                <NavLink to="/cart" className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive ? 'text-white bg-white/10 shadow-inner' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
+                                    Cart ({getCartCount()})
+                                </NavLink>
+                            )}
+
+                            {/* Only show Admin Dashboard if the user is an Admin */}
+                            {user?.role === 'Admin' && (
+                                <NavLink to="/admin" end className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive ? 'text-white bg-white/10 shadow-inner' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>Admin Dashboard</NavLink>
+                            )}
+                            {user?.role === 'Admin' && (
+                                <NavLink to="/admin/orders" className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive ? 'text-white bg-white/10 shadow-inner' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>Manage Orders</NavLink>
                             )}
                         </div>
                     </div>
@@ -41,7 +56,7 @@ const Navbar = () => {
                                 <span className="text-emerald-400 text-sm font-medium hidden sm:block">Hello, {user.fullName}</span>
                                 <button
                                     onClick={handleLogout}
-                                    className="bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white px-4 py-2 rounded-lg text-sm font-bold transition-all"
+                                    className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg shadow-red-500/30 transition-all"
                                 >
                                     Logout
                                 </button>

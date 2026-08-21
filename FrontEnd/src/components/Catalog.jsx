@@ -1,12 +1,15 @@
 // src/components/Catalog.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react'; // <-- Added useContext here!
 import api from '../api/axios';
 import { Link } from 'react-router-dom';
+import { CartContext } from '../context/CartContext';
 
 const Catalog = () => {
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const { addToCart } = useContext(CartContext); 
+
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -73,11 +76,21 @@ const Catalog = () => {
                                         {book.description}
                                     </p>
 
-                                    <div className="mt-auto pt-4 border-t border-slate-700">
-                                        <button className="w-full bg-slate-700 hover:bg-emerald-600 text-white font-semibold py-2.5 rounded-xl transition-colors shadow-lg">
-                                            View Details
+                                    <div className="mt-auto pt-4 border-t border-slate-700 flex gap-2">
+                                        <Link
+                                            to={`/book/${book.id}`}
+                                            className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2.5 rounded-xl transition-colors shadow-lg text-center"
+                                        >
+                                            Details
+                                        </Link>
+                                        <button
+                                            onClick={() => addToCart(book)}
+                                            className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl transition-colors shadow-lg shadow-emerald-500/20"
+                                        >
+                                            Add to Cart
                                         </button>
                                     </div>
+
                                 </div>
                             </div>
                         ))}
