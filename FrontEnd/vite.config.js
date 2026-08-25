@@ -4,11 +4,15 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(),
-  tailwindcss(),],
-   server: {
+  plugins: [react(), tailwindcss()],
+  server: {
     watch: {
       ignored: ['**/.vs/**'] // This tells Vite to ignore Visual Studio's hidden folder
     }
+  },
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./tests/setup.js'],
+    globals: true
   }
 })
