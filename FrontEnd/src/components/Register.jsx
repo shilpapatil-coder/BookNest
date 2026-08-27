@@ -19,10 +19,17 @@ const Register = () => {
             login(response.data);
             navigate('/');
         } catch (err) {
-            const serverMessage = typeof err.response?.data === 'string' 
-                ? err.response?.data 
-                : err.response?.data?.message || err.response?.data?.title;
-            setError(serverMessage || 'Failed to register. Password must contain an uppercase letter, a number, and be 6 characters long.');
+            let msg = '';
+            if (Array.isArray(err.response?.data)) {
+                msg = err.response.data.map(e => e.description || e.message).join(' ');
+            } else if (typeof err.response?.data === 'string') {
+                msg = err.response.data;
+            } else if (err.response?.data?.message) {
+                msg = err.response.data.message;
+            } else if (err.response?.data?.title) {
+                msg = err.response.data.title;
+            }
+            setError(msg || `Registration failed (Status ${err.response?.status || 'Network Error'}).`);
         }
     };
 
