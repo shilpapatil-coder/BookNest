@@ -19,7 +19,10 @@ const Register = () => {
             login(response.data);
             navigate('/');
         } catch (err) {
-            setError('Failed to register. Password must contain an uppercase letter, a number, and be 6 characters long.');
+            const serverMessage = typeof err.response?.data === 'string' 
+                ? err.response?.data 
+                : err.response?.data?.message || err.response?.data?.title;
+            setError(serverMessage || 'Failed to register. Password must contain an uppercase letter, a number, and be 6 characters long.');
         }
     };
 

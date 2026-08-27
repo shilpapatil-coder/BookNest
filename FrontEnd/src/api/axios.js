@@ -2,8 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    // Make sure this matches the port from your Swagger UI! (e.g., 7151)
-    baseURL: 'https://localhost:7151/api',
+    baseURL: import.meta.env.VITE_API_BASE_URL || 'https://app-booknest-exemdtd9dzaeb2hk.centralindia-01.azurewebsites.net/api',
 });
 
 // This automatically attaches the JWT token to every request if you are logged in
