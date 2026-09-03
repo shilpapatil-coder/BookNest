@@ -200,7 +200,7 @@ const Catalog = () => {
                                     {/* Wishlist Heart Button */}
                                     <button 
                                         onClick={() => isInWishlist(book.id) ? removeFromWishlist(book.id) : addToWishlist(book)}
-                                        className={`absolute top-3 right-3 p-2 rounded-full transition-all shadow-lg backdrop-blur-md border ${
+                                        className={`absolute bottom-3 right-3 p-2 rounded-full transition-all shadow-lg backdrop-blur-md border ${
                                             isInWishlist(book.id) 
                                                 ? 'bg-purple-600/90 text-white border-purple-500 hover:bg-purple-700' 
                                                 : 'bg-slate-900/60 text-slate-300 border-slate-700 hover:bg-slate-800 hover:text-purple-400'
