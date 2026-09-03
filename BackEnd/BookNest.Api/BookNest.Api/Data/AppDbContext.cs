@@ -1,4 +1,4 @@
-﻿using BookNest.Api.Models;
+using BookNest.Api.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,4 +15,5 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Book> Books { get; set; }
     public DbSet<Review> Reviews { get; set; }
+    public DbSet<WishlistItem> WishlistItems { get; set; }
 }

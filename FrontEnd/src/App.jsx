@@ -6,6 +6,7 @@ import Register from './components/Register';
 import AdminDashboard from './components/AdminDashboard';
 import Catalog from './components/Catalog';
 import Cart from './components/Cart';
+import Wishlist from './components/Wishlist';
 import BookDetail from './components/BookDetail'; // <-- Added this
 import OrderHistory from './components/OrderHistory';
 import AdminOrders from './components/AdminOrders';
@@ -20,6 +21,7 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/cart" element={<Cart />} />
+                <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/book/:id" element={<BookDetail />} /> {/* <-- Added this */}
                 <Route path="/orders" element={<OrderHistory />} />
                 <Route path="/admin/orders" element={<AdminOrders />} />

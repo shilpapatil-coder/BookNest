@@ -3,6 +3,7 @@ import { useState, useEffect, useContext } from 'react';
 import api from '../api/axios';
 import { Link } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
+import { WishlistContext } from '../context/WishlistContext';
 
 const Catalog = () => {
     const [books, setBooks] = useState([]);
@@ -12,6 +13,7 @@ const Catalog = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [inStockOnly, setInStockOnly] = useState(false);
     const { addToCart } = useContext(CartContext); 
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useContext(WishlistContext); 
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -194,6 +196,21 @@ const Catalog = () => {
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-slate-500">No Cover Image</div>
                                     )}
+
+                                    {/* Wishlist Heart Button */}
+                                    <button 
+                                        onClick={() => isInWishlist(book.id) ? removeFromWishlist(book.id) : addToWishlist(book)}
+                                        className={`absolute top-3 right-3 p-2 rounded-full transition-all shadow-lg backdrop-blur-md border ${
+                                            isInWishlist(book.id) 
+                                                ? 'bg-purple-600/90 text-white border-purple-500 hover:bg-purple-700' 
+                                                : 'bg-slate-900/60 text-slate-300 border-slate-700 hover:bg-slate-800 hover:text-purple-400'
+                                        }`}
+                                        title={isInWishlist(book.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                                    >
+                                        <svg className="w-4 h-4" fill={isInWishlist(book.id) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                        </svg>
+                                    </button>
                                     
                                     {/* Category Badge */}
                                     {book.category && (

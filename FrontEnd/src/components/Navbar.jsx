@@ -5,9 +5,12 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 
+import { WishlistContext } from '../context/WishlistContext';
+
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
     const { getCartCount, clearCart } = useContext(CartContext);
+    const { wishlist } = useContext(WishlistContext);
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -31,6 +34,12 @@ const Navbar = () => {
                             <NavLink to="/" end className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive ? 'text-white bg-white/10 shadow-inner' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>Catalog</NavLink>
                             {user && (
                                 <NavLink to="/orders" className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive ? 'text-white bg-white/10 shadow-inner' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>My Orders</NavLink>
+                            )}
+
+                            {user && (
+                                <NavLink to="/wishlist" className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive ? 'text-white bg-white/10 shadow-inner' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
+                                    Wishlist ({wishlist?.length || 0})
+                                </NavLink>
                             )}
 
                             {user && (
