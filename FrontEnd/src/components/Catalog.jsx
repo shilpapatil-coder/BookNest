@@ -12,6 +12,8 @@ const Catalog = () => {
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
     const [inStockOnly, setInStockOnly] = useState(false);
+    const [sortBy, setSortBy] = useState('featured');
+    const [maxPrice, setMaxPrice] = useState(10000); // Default max price
     const { addToCart } = useContext(CartContext); 
     const { addToWishlist, removeFromWishlist, isInWishlist } = useContext(WishlistContext); 
 
@@ -41,7 +43,7 @@ const Catalog = () => {
         return acc;
     }, {});
 
-    // Filter books based on search query, selected category, and stock availability
+    // Filter books based on search query, selected category, stock availability, and max price
     const filteredBooks = books.filter(book => {
         const matchesCategory = selectedCategory === 'All' || book.category === selectedCategory;
         const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -49,13 +51,25 @@ const Catalog = () => {
                               (book.category && book.category.toLowerCase().includes(searchQuery.toLowerCase())) ||
                               (book.description && book.description.toLowerCase().includes(searchQuery.toLowerCase()));
         const matchesStock = !inStockOnly || book.stockQuantity > 0;
-        return matchesCategory && matchesSearch && matchesStock;
+        const matchesPrice = book.price <= maxPrice;
+        return matchesCategory && matchesSearch && matchesStock && matchesPrice;
+    });
+
+    // Sort the filtered books
+    const sortedBooks = [...filteredBooks].sort((a, b) => {
+        if (sortBy === 'price-asc') return a.price - b.price;
+        if (sortBy === 'price-desc') return b.price - a.price;
+        if (sortBy === 'title-asc') return a.title.localeCompare(b.title);
+        if (sortBy === 'newest') return new Date(b.createdDate) - new Date(a.createdDate);
+        return 0; // featured / default
     });
 
     const resetFilters = () => {
         setSelectedCategory('All');
         setSearchQuery('');
         setInStockOnly(false);
+        setSortBy('featured');
+        setMaxPrice(10000);
     };
 
     if (loading) {
@@ -66,7 +80,7 @@ const Catalog = () => {
         return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-red-400 text-xl">{error}</div>;
     }
 
-    const hasActiveFilters = selectedCategory !== 'All' || searchQuery !== '' || inStockOnly;
+    const hasActiveFilters = selectedCategory !== 'All' || searchQuery !== '' || inStockOnly || sortBy !== 'featured' || maxPrice < 10000;
 
     return (
         <div className="bg-slate-900 p-6 sm:p-10 pt-12 min-h-screen">
@@ -83,10 +97,10 @@ const Catalog = () => {
 
                 {/* Filter & Search Toolbar */}
                 <div className="bg-slate-800/80 backdrop-blur-md rounded-2xl p-6 mb-8 border border-slate-700 shadow-xl space-y-6">
-                    {/* Top Row: Search Bar + In Stock Toggle */}
+                    {/* Top Row: Search Bar + Sort + In Stock Toggle */}
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                         {/* Search Bar */}
-                        <div className="md:col-span-8 relative">
+                        <div className="md:col-span-6 relative">
                             <input
                                 type="text"
                                 placeholder="Search by title, author, category, or keywords..."
@@ -108,8 +122,23 @@ const Catalog = () => {
                             )}
                         </div>
 
+                        {/* Sort Dropdown */}
+                        <div className="md:col-span-3">
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                            >
+                                <option value="featured">Sort: Featured</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                                <option value="title-asc">Title: A to Z</option>
+                                <option value="newest">Newest Arrivals</option>
+                            </select>
+                        </div>
+
                         {/* In Stock Toggle Checkbox */}
-                        <div className="md:col-span-4 flex items-center justify-between md:justify-end gap-3 bg-slate-900/60 px-4 py-3 rounded-xl border border-slate-700/60">
+                        <div className="md:col-span-3 flex items-center justify-between md:justify-end gap-3 bg-slate-900/60 px-4 py-3 rounded-xl border border-slate-700/60">
                             <label htmlFor="inStockCheckbox" className="text-sm font-medium text-slate-300 cursor-pointer select-none">
                                 In Stock Only
                             </label>
@@ -121,6 +150,20 @@ const Catalog = () => {
                                 className="w-4 h-4 text-emerald-600 bg-slate-800 border-slate-600 rounded focus:ring-emerald-500 focus:ring-2 cursor-pointer"
                             />
                         </div>
+                    </div>
+
+                    {/* Middle Row: Price Slider */}
+                    <div className="flex items-center gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-700/50">
+                        <span className="text-sm font-bold text-slate-400">Max Price: ₹{maxPrice}</span>
+                        <input 
+                            type="range" 
+                            min="50" 
+                            max="5000" 
+                            step="50" 
+                            value={maxPrice} 
+                            onChange={(e) => setMaxPrice(Number(e.target.value))}
+                            className="flex-grow h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                        />
                     </div>
 
                     {/* Category Filter Pills */}
@@ -156,7 +199,7 @@ const Catalog = () => {
                 {/* Results Count Bar */}
                 <div className="flex items-center justify-between gap-4 mb-6 px-1">
                     <div className="text-slate-400 text-sm">
-                        Showing <span className="text-emerald-400 font-bold">{filteredBooks.length}</span> of <span className="text-white font-semibold">{books.length}</span> total books
+                        Showing <span className="text-emerald-400 font-bold">{sortedBooks.length}</span> of <span className="text-white font-semibold">{books.length}</span> total books
                     </div>
 
                     {hasActiveFilters && (
@@ -170,7 +213,7 @@ const Catalog = () => {
                 </div>
 
                 {/* Books Grid */}
-                {filteredBooks.length === 0 ? (
+                {sortedBooks.length === 0 ? (
                     <div className="text-center text-slate-400 text-lg py-16 px-6 bg-slate-800/40 rounded-2xl border border-slate-800 max-w-lg mx-auto shadow-xl">
                         <div className="text-4xl mb-3">🔍</div>
                         <h3 className="text-xl font-bold text-white mb-2">No books found</h3>
@@ -186,7 +229,7 @@ const Catalog = () => {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
-                        {filteredBooks.map((book) => (
+                        {sortedBooks.map((book) => (
                             <div key={book.id} className="bg-slate-800 rounded-2xl overflow-hidden shadow-xl border border-slate-700 hover:border-emerald-500/50 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/20 group flex flex-col">
 
                                 {/* Image Container */}
