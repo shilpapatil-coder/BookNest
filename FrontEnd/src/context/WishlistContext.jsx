@@ -1,33 +1,38 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import api from '../api/axios';
+import { AuthContext } from './AuthContext';
 
 export const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
     const [wishlist, setWishlist] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { user } = useContext(AuthContext); // <-- Listen to auth state
 
-    // Fetch wishlist items on mount if user is logged in
+    // Fetch wishlist items on mount or when user logs in/out
     useEffect(() => {
         const fetchWishlist = async () => {
             const token = localStorage.getItem('token');
-            if (!token) {
+            if (!token || !user) {
+                setWishlist([]); // Clear if logged out
                 setLoading(false);
                 return;
             }
 
             try {
+                setLoading(true);
                 const response = await api.get('/Wishlist');
                 setWishlist(response.data);
             } catch (error) {
                 console.error("Failed to load wishlist", error);
+                setWishlist([]);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchWishlist();
-    }, []);
+    }, [user]);
 
     const addToWishlist = async (book) => {
         if (!localStorage.getItem('token')) {
