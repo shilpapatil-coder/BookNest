@@ -72,6 +72,7 @@ builder.Services
     });
 
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddHttpClient<IEmailTriggerService, EmailTriggerService>();
 
 var app = builder.Build();
 

@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "BookNest_Functions": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7070",
+      "launchBrowser": false
+    }
+  }
+}

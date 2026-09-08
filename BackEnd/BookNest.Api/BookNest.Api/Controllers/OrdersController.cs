@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using BookNest.Api.Services;
 
 namespace BookNest.Api.Controllers;
 
@@ -16,11 +17,13 @@ public class OrdersController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IEmailTriggerService _emailTriggerService;
 
-    public OrdersController(AppDbContext context, UserManager<ApplicationUser> userManager)
+    public OrdersController(AppDbContext context, UserManager<ApplicationUser> userManager, IEmailTriggerService emailTriggerService)
     {
         _context = context;
         _userManager = userManager;
+        _emailTriggerService = emailTriggerService;
     }
 
     [HttpPost("checkout")]
@@ -71,6 +74,9 @@ public class OrdersController : ControllerBase
         // 4. Save to Database
         _context.Orders.Add(newOrder);
         await _context.SaveChangesAsync();
+
+        // 5. Trigger the Email via Azure Function
+        _ = _emailTriggerService.TriggerOrderConfirmationEmailAsync(newOrder, user.FullName, user.Email);
 
         return Ok(new { message = "Order placed successfully!", orderId = newOrder.Id });
     }
